@@ -52,21 +52,27 @@
             "mountpoint":"",
             "rid":"mnqxgmra",
         };
-        function updateMetadata(){
-            console.log(new Date(),"Atualizando informação de mídia!");
+        function updateMetadata(mountpoint){
+            console.log(new Date(),"Updating media info with mountpoint:", mountpoint);
             let params = URL_PARAMS;
+            params.mountpoint = mountpoint;
             params._ = new Date().valueOf();
             $.getJSON(URL_BASE, params, function(result){
-                // console.log(result);
                 if (result.data && result.data.length > 0) {
-                    $("#current-song").html(result.data[0].song);
-                    $("#current-song").show();
-                    $("#current-title").html(result.data[0].title);
+                    let sourceconn = result.data[0].sourceconn;
+                    if (mountpoint == "" && !sourceconn) {
+                      console.log(new Date(),"mountpoint:" + mountpoint + " not connected!");
+                      updateMetadata("/autodj")
+                    } else {
+                      $("#current-song").html(result.data[0].song);
+                      $("#current-song").show();
+                      $("#current-title").html(result.data[0].title);
+                      console.log(new Date(),"mountpoint:" + mountpoint + " conected and media info updated!");
+                    }
                 }
             });
         }
-        updateMetadata();
-        setInterval(updateMetadata, 30000);
+        setInterval(updateMetadata(""), 30000);
     </script>
 
 	<!-- Google tag (gtag.js) -->
@@ -75,7 +81,6 @@
 	  window.dataLayer = window.dataLayer || [];
 	  function gtag(){dataLayer.push(arguments);}
 	  gtag('js', new Date());
-
 	  gtag('config', 'G-9ZNX61E0TS');
 	</script>
   </body>
